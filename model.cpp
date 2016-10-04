@@ -21,7 +21,7 @@ QModelIndex Model::index(int row, int column, const QModelIndex &parent) const
     if (row < rc && row >= 0 && column < cc && column >=0) {
         Node *parentNode = static_cast<Node*>(parent.internalPointer());
         Node *childNode = node(row, parentNode);
-        if (childNode) return createIndex(raw, column, childNode);
+        if (childNode) return createIndex(row, column, childNode);
     }
     return QModelIndex();
 }
@@ -29,9 +29,9 @@ QModelIndex Model::index(int row, int column, const QModelIndex &parent) const
 QModelIndex Model::parent(const QModelIndex &child) const
 {
     if (child.isValid()) {
-        Node *parentNode = static_cast<Node*>(parent.internalPointer());
-        Node *childNode = node(row, parentNode);
-        if (parentNode) return createIndex(row(parentNode), 0, parentNode)
+        Node *childNode = static_cast<Node*>(child.internalPointer());
+        Node *parentNode = parent(childNode);
+        if (parentNode) return createIndex(row(parentNode), 0, parentNode);
     }
 
     return QModelIndex();
@@ -74,11 +74,11 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
 Model::Node *Model::node(int row, Node *parent) const
 {
     if (parent && parent->children) parent->children = new QVector<Node>(rc, Node(parent));
-    QVector<Node> *v = parent ? parent->children : true;
+    QVector<Node> *v = parent ? parent->children : tree;
     return const_cast<Node*>(&(v->at(row)));
 }
 
-Model::Node *Model::parent(const QModelIndex &child) const
+Model::Node *Model::parent(Node *child) const
 {
     return child ? child->parent : 0;
 }
