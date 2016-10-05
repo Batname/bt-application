@@ -20,3 +20,6 @@ HEADERS  += mainwindow.h \
     model.h
 
 FORMS    +=
+
+RESOURCES += \
+    interview.qrc
